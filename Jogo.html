@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="title">Jogo</title>
+    <link rel="icon" type="image/x-icon" href="https://png.pngtree.com/png-vector/20220621/ourmid/pngtree-simple-circle-target-template-png-image_5252610.png">
+    <style>
+        #pontos{
+            display: none;
+        }
+        .alvo{
+            width: 150px;
+            height: auto;
+            position: relative;
+            display: none;
+        }
+        /*.alvo:hover{
+            scale: 0.95;
+        }*/
+    </style>
+    <script>
+        var highscore = 0
+        function load(){
+            if (localStorage.highscore != null){
+                console.log(localStorage.highscore)
+                document.getElementById("title").innerHTML = "Jogo | Highscore: "+localStorage.highscore
+                document.getElementById("highscore").style.display = "block"
+                document.getElementById("highscore").innerHTML = "Highscore: "+localStorage.highscore
+            }else{
+                localStorage.highscore = 0
+                document.getElementById("title").innerHTML = "Jogo"
+            }
+        }
+
+        var tantoQueVaiDiminuir = 0.0025
+        function iniciar(){
+            document.getElementById('botao').style.display = 'none' 
+            document.getElementById('pontos').style.display = 'block'
+
+            spawn()
+            setInterval(tempo, 1)
+        }
+
+        var alvos = 0
+        var alvosnatela = 0
+        function spawn(){
+            tantoQueVaiDiminuir += 0.0001
+            var x = Math.floor(Math.random() * 90) + 1;
+            var y = Math.floor(Math.random() * 30) + 1;
+            const node = document.getElementById('alvo')
+            alvos += 1
+            //var left = Math.floor(Math.random() * 10)+1
+            const clone = node.cloneNode(true);
+            clone.id = "alvo"+alvos
+            document.getElementById("body").appendChild(clone);
+            alvosnatela +=1
+            document.getElementById(clone.id).style.scale = 2
+            document.getElementById(clone.id).style.display = 'block'
+            document.getElementById(clone.id).style.left = x+"%"
+            document.getElementById(clone.id).style.marginTop = y+"%"
+        }
+
+        var Pontos = 0
+        function ponto(){
+            Pontos += 1
+            if (Pontos > localStorage.highscore){
+                localStorage.highscore = Pontos
+                document.getElementById("title").innerHTML = "Jogo | Highscore: "+Pontos
+            }
+            document.getElementById('pontos').innerHTML = "Pontos: "+Pontos
+            document.getElementById(event.srcElement.id).style.display = 'none'
+            alvosnatela -= 1
+            spawn()
+        }
+
+        function end(){
+            clearInterval(tempo)
+            if (Pontos > localStorage.highscore){
+                localStorage.highscore = Pontos
+                document.getElementById("title").innerHTML = "Jogo | Highscore: "+Pontos
+            }
+            document.write()
+            window.location.reload()
+        }
+        
+        function tempo(){
+            if (document.getElementById("alvo"+alvos).style.display == 'block'){
+                document.getElementById("alvo"+alvos).style.scale -= tantoQueVaiDiminuir
+                if (document.getElementById("alvo"+alvos).style.scale <= 0){
+                    end()
+                }
+            }
+        }
+
+     
+    </script>
+</head>
+<body id="body" style="overflow: hidden;" onload="load()">
+    <button onclick="iniciar()" id="botao">Iniciar jogo</button>
+    <button id="botao" onclick="localStorage.clear(); window.location.reload()">Apagar dados</button>
+    <h1 style="display: none;" id="highscore">Highscore: 0</h1>
+    <p id="nome"></p>
+    <h1 id="pontos">Pontos: 0</h1>
+    <img id="alvo" class="alvo" draggable="false" src="https://png.pngtree.com/png-vector/20220621/ourmid/pngtree-simple-circle-target-template-png-image_5252610.png" onclick="ponto()">
+</body>
+</html>
